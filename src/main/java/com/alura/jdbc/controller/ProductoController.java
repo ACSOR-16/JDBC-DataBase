@@ -62,14 +62,41 @@ public class ProductoController {
 	}
 
     public void guardar(HashMap<String, String> producto) throws SQLException {
+		String nombre = producto.get("NOMBRE");
+		String descripcion = producto.get("DESCRIPCION");
+		Integer cantidad = Integer.valueOf(producto.get("CANTIDAD"));
+		Integer maximaCantidad = 50;
+		
 		Connection con = new ConnectionFactory().recuperarConexion();
+		con.setAutoCommit(false);
 
 		PreparedStatement statement = con.prepareStatement("INSERT INTO producto (nombre, descripcion, cantidad)"
 				+ " VALUES (?, ?, ?)",
 				Statement.RETURN_GENERATED_KEYS);
-		statement.setString(1, producto.get("NOMBRE"));
-		statement.setString(2, producto.get("DESCRIPCION"));
-		statement.setInt(3, Integer.valueOf(producto.get("CANTIDAD")));
+		try {
+			do {
+				int cantidadParaGuardar = Math.min(cantidad, maximaCantidad);
+				ejecutaRegistro(nombre, descripcion, cantidadParaGuardar, statement);
+				cantidad -= maximaCantidad;
+			} while (cantidad > 0);
+			con.commit();
+			System.out.println("COMMIT");
+		} catch (Exception e) {
+			con.rollback();
+			System.out.println("ROLLBACK");
+		}
+		statement.close();
+
+		con.close();
+	}
+
+	private static void ejecutaRegistro(String nombre, String descripcion, Integer cantidad, PreparedStatement statement) throws SQLException {
+		if (cantidad < 50) {
+			throw new RuntimeException("ocurrrio un problema");
+		}
+		statement.setString(1, nombre);
+		statement.setString(2, descripcion);
+		statement.setInt(3, cantidad);
 
 		statement.execute();
 
