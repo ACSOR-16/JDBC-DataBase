@@ -2,6 +2,7 @@ package com.alura.jdbc.controller;
 
 import com.alura.jdbc.factory.ConnectionFactory;
 import com.alura.jdbc.modelo.Producto;
+import com.alura.jdbc.dao.ProductoDAO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -74,41 +75,8 @@ public class ProductoController {
 	}
 
 	public void guardar(Producto producto) throws SQLException {
-		final Connection con = new ConnectionFactory().recuperarConexion();
-		try(con) {
-			con.setAutoCommit(false);
-
-			final PreparedStatement statement = con.prepareStatement("INSERT INTO producto (nombre, descripcion, cantidad)"
-							+ " VALUES (?, ?, ?)",
-					Statement.RETURN_GENERATED_KEYS);
-			try (statement) {
-				ejecutaRegistro(producto, statement);
-				con.commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("ROLLBACK");
-				con.rollback();
-			}
-		}
-	}
-
-	private static void ejecutaRegistro(Producto producto, PreparedStatement statement) throws SQLException {
-			statement.setString(1, producto.getNombre());
-		statement.setString(2, producto.getDescripcion());
-		statement.setInt(3, producto.getCantidad());
-
-		statement.execute();
-
-		final ResultSet resultSet = statement.getGeneratedKeys();
-
-		try(resultSet) {
-			while (resultSet.next()) {
-				producto.setId(resultSet.getInt(1));
-				System.out.println(String.format(
-							"Fue inseratado un producto de ID %s",
-							producto));
-			}
-		}
+		ProductoDAO productoDAO = new ProductoDAO(new ConnectionFactory().recuperarConexion());
+		productoDAO.guardar(producto);
 	}
 
 }
