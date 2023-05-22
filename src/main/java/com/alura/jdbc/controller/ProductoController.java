@@ -1,6 +1,7 @@
 package com.alura.jdbc.controller;
 
 import com.alura.jdbc.factory.ConnectionFactory;
+import com.alura.jdbc.modelo.Producto;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -72,12 +73,7 @@ public class ProductoController {
 		}
 	}
 
-	public void guardar(HashMap<String, String> producto) throws SQLException {
-		String nombre = producto.get("NOMBRE");
-		String descripcion = producto.get("DESCRIPCION");
-		Integer cantidad = Integer.valueOf(producto.get("CANTIDAD"));
-		Integer maximaCantidad = 50;
-
+	public void guardar(Producto producto) throws SQLException {
 		final Connection con = new ConnectionFactory().recuperarConexion();
 		try(con) {
 			con.setAutoCommit(false);
@@ -86,28 +82,20 @@ public class ProductoController {
 							+ " VALUES (?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			try (statement) {
-				do {
-					int cantidadParaGuardar = Math.min(cantidad, maximaCantidad);
-					ejecutaRegistro(nombre, descripcion, cantidadParaGuardar, statement);
-					cantidad -= maximaCantidad;
-				} while (cantidad > 0);
+				ejecutaRegistro(producto, statement);
 				con.commit();
-				System.out.println("COMMIT");
 			} catch (Exception e) {
-				con.rollback();
+				e.printStackTrace();
 				System.out.println("ROLLBACK");
-
+				con.rollback();
 			}
 		}
 	}
 
-	private static void ejecutaRegistro(String nombre, String descripcion, Integer cantidad, PreparedStatement statement) throws SQLException {
-		if (cantidad < 50) {
-			throw new RuntimeException("ocurrrio un problema");
-		}
-		statement.setString(1, nombre);
-		statement.setString(2, descripcion);
-		statement.setInt(3, cantidad);
+	private static void ejecutaRegistro(Producto producto, PreparedStatement statement) throws SQLException {
+			statement.setString(1, producto.getNombre());
+		statement.setString(2, producto.getDescripcion());
+		statement.setInt(3, producto.getCantidad());
 
 		statement.execute();
 
@@ -115,10 +103,10 @@ public class ProductoController {
 
 		try(resultSet) {
 			while (resultSet.next()) {
-				System.out.println(
-					String.format(
-							"Fue inseratado un producto de ID %d",
-							resultSet.getInt(1)));
+				producto.setId(resultSet.getInt(1));
+				System.out.println(String.format(
+							"Fue inseratado un producto de ID %s",
+							producto));
 			}
 		}
 	}
