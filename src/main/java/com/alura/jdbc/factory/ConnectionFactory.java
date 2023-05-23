@@ -19,7 +19,11 @@ public class ConnectionFactory {
             this.dataSource = pooledDataSource;
     }
 
-    public Connection recuperarConexion() throws SQLException {
-        return this.dataSource.getConnection();
+    public Connection recuperarConexion() {
+        try{
+            return this.dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

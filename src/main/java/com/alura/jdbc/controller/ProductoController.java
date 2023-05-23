@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ProductoController {
+	private  ProductoDAO productoDAO;
+
+	public ProductoController() {
+		this.productoDAO = new ProductoDAO(new ConnectionFactory().recuperarConexion());
+	}
 
 	public int modificar(String nombre, String descripcion, Integer id, Integer cantidad) throws SQLException {
 		final Connection con = new ConnectionFactory().recuperarConexion();
@@ -74,7 +79,7 @@ public class ProductoController {
 		}
 	}
 
-	public void guardar(Producto producto) throws SQLException {
+	public void guardar(Producto producto) {
 		ProductoDAO productoDAO = new ProductoDAO(new ConnectionFactory().recuperarConexion());
 		productoDAO.guardar(producto);
 	}

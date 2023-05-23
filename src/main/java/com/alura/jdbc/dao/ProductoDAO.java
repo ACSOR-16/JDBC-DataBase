@@ -11,21 +11,17 @@ public class ProductoDAO {
         this.con = con;
     }
 
-    public void guardar(Producto producto) throws SQLException {
+    public void guardar(Producto producto) {
         try (con) {
-            con.setAutoCommit(false);
-
             final PreparedStatement statement = con.prepareStatement("INSERT INTO producto (nombre, descripcion, cantidad)"
                             + " VALUES (?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
             try (statement) {
                 ejecutaRegistro(producto, statement);
                 con.commit();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("ROLLBACK");
-                con.rollback();
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
