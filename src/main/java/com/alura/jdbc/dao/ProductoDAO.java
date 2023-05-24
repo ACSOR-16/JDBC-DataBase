@@ -5,9 +5,7 @@ import com.alura.jdbc.modelo.Producto;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ProductoDAO {
     final private Connection con;
@@ -74,6 +72,46 @@ public class ProductoDAO {
             }
             return resultado;
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int eliminar(Integer id) {
+        try {
+            final PreparedStatement statement = con.prepareStatement("DELETE FROM producto WHERE ID = ?");
+            try (statement) {
+                statement.setInt(1, id);
+                statement.execute();
+
+                int updateCount = statement.getUpdateCount();
+                return updateCount;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public int modificar(String nombre, String descripcion, Integer cantidad, Integer id) {
+        try(con) {
+            final  PreparedStatement statement = con.prepareStatement("UPDATE producto SET " +
+                    "NOMBRE = ?, " +
+                    "DESCRIPCION = ?, " +
+                    "CANTIDAD = ? " +
+                    "WHERE ID = ?");
+
+            try (statement) {
+                statement.setString(1, nombre);
+                statement.setString(2, descripcion);
+                statement.setInt(3, cantidad);
+                statement.setInt(4, id);
+                statement.execute();
+
+                int updateCount = statement.getUpdateCount();
+
+                return updateCount;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
