@@ -1,8 +1,13 @@
 package com.alura.jdbc.dao;
 
+import com.alura.jdbc.factory.ConnectionFactory;
 import com.alura.jdbc.modelo.Producto;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProductoDAO {
     final private Connection con;
@@ -44,5 +49,33 @@ public class ProductoDAO {
         }
     }
 
+    public List<Producto> listar() {
+        List<Producto> resultado = new ArrayList<>();
 
+        final Connection con = new ConnectionFactory().recuperarConexion();
+
+        try(con) {
+            final PreparedStatement statement = con.prepareStatement("SELECT ID, NOMBRE, DESCRIPCION, CANTIDAD FROM producto");
+            try(statement) {
+                statement.execute();
+
+                final ResultSet resultSet = statement.getResultSet();
+
+                try(resultSet) {
+                    while (resultSet.next()) {
+                        Producto fila = new Producto(resultSet.getInt("id"),
+                                resultSet.getString("NOMBRE"),
+                                resultSet.getString("DESCRIPCION"),
+                                resultSet.getInt("CANTIDAD"));
+
+                        resultado.add(fila);
+                    }
+                }
+            }
+            return resultado;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
