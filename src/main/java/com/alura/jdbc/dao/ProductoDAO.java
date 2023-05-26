@@ -19,7 +19,7 @@ public class ProductoDAO {
         try {
             PreparedStatement statement;
             statement = con.prepareStatement(
-                    "INSERT INTO PRODUCTO "
+                    "INSERT INTO producto "
                             + "(nombre, descripcion, cantidad, categoria_id)"
                             + " VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
@@ -51,7 +51,7 @@ public class ProductoDAO {
 
         try {
             final PreparedStatement statement = con
-                    .prepareStatement("SELECT ID, NOMBRE, DESCRIPCION, CANTIDAD FROM PRODUCTO");
+                    .prepareStatement("SELECT ID, NOMBRE, DESCRIPCION, CANTIDAD FROM producto");
 
             try (statement) {
                 statement.execute();
@@ -77,7 +77,7 @@ public class ProductoDAO {
 
     public int eliminar(Integer id) {
         try {
-            final PreparedStatement statement = con.prepareStatement("DELETE FROM PRODUCTO WHERE ID = ?");
+            final PreparedStatement statement = con.prepareStatement("DELETE FROM producto WHERE ID = ?");
 
             try (statement) {
                 statement.setInt(1, id);
@@ -95,7 +95,7 @@ public class ProductoDAO {
     public int modificar(String nombre, String descripcion, Integer cantidad, Integer id) {
         try {
             final PreparedStatement statement = con.prepareStatement(
-                    "UPDATE PRODUCTO SET "
+                    "UPDATE producto SET "
                             + " NOMBRE = ?, "
                             + " DESCRIPCION = ?,"
                             + " CANTIDAD = ?"
@@ -122,7 +122,7 @@ public class ProductoDAO {
 
         try {
             String sql = "SELECT ID, NOMBRE, DESCRIPCION, CANTIDAD "
-                    + " FROM PRODUCTO WHERE CATEGORIA_ID = ?";
+                    + " FROM producto WHERE CATEGORIA_ID = ?";
             System.out.println(sql);
 
             final PreparedStatement statement = con.prepareStatement(
