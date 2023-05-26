@@ -16,8 +16,9 @@ public class ProductoDAO {
 
     public void guardar(Producto producto) {
         try (con) {
-            final PreparedStatement statement = con.prepareStatement("INSERT INTO producto (nombre, descripcion, cantidad)"
-                            + " VALUES (?, ?, ?)",
+            final PreparedStatement statement = con.prepareStatement(
+                    "INSERT INTO producto (nombre, descripcion, cantidad, categoria_id)"
+                            + " VALUES (?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
             try (statement) {
                 ejecutaRegistro(producto, statement);

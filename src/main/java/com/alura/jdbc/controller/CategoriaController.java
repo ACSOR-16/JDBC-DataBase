@@ -11,17 +11,15 @@ public class CategoriaController {
     private CategoriaDAO categoriaDAO;
 
     public CategoriaController() {
-        var factory = new ConnectionFactory();
-        this.categoriaDAO = new CategoriaDAO(factory.recuperarConexion());
+        this.categoriaDAO = new CategoriaDAO(new ConnectionFactory().recuperarConexion());
     }
 
 	public List<Categoria> listar() {
-		return categoriaDAO.listar();
+		return this.categoriaDAO.listar();
 	}
 
-    public List<?> cargaReporte() {
-        // TODO
-        return new ArrayList<>();
+    public List<Categoria> cargaReporte() {
+        return this.categoriaDAO.listarConProductos();
     }
 
 }
